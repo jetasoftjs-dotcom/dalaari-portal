@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dalaari.com | Project Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .id-card-bg { background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%); position: relative; overflow: hidden; }
+        .hidden { display: none !important; }
+        .active-tab { border-bottom: 3px solid #2563eb; color: #2563eb; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- NOTIFICATION TOAST -->
+<div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] transition-transform duration-300 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3">
+    <span id="toastMsg"></span>
+</div>
+
+<!-- HEADER -->
+<header class="bg-white sticky top-0 z-40 border-b border-gray-100 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-2xl font-extrabold text-blue-600 tracking-tight">Dalaari<span class="text-gray-900">.com</span></h1>
+        <nav class="flex items-center space-x-6">
+            <button id="logoutBtn" class="hidden text-red-500 hover:text-red-700 font-semibold transition px-4 py-2 rounded-lg hover:bg-red-50">Logout</button>
+        </nav>
+    </div>
+</header>
+
+<!-- LANDING / AUTH PAGE -->
+<section id="authPage" class="py-16 px-4">
+    <div class="container mx-auto max-w-6xl flex flex-col lg:flex-row items-center gap-12">
+        <div class="flex-1 text-center lg:text-left">
+            <h2 class="text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
+                Your Trusted <span class="text-blue-600">Consultant</span> Network.
+            </h2>
+            <p class="text-xl text-gray-600 mb-8 max-w-xl">
+                Join thousands of verified consultants and organizations on the Dalaari platform. Access exclusive project listings and grow your business today.
+            </p>
+            <div class="flex flex-wrap justify-center lg:justify-start gap-4 text-sm font-bold text-gray-500 uppercase tracking-widest">
+                <span>✓ Active Marketplace</span>
+                <span>•</span>
+                <span>✓ Verified IDs</span>
+                <span>•</span>
+                <span>✓ Global Opportunities</span>
+            </div>
+        </div>
+
+        <div class="w-full max-w-md">
+            <div class="bg-white p-8 rounded-3xl shadow-2xl border border-gray-100">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Get Started</h3>
+                    <p class="text-gray-500">Enter the marketplace or create your ID</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">I am a...</label>
+                        <select id="userType" class="w-full border border-gray-200 p-3 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                            <option value="Consultant">Individual Consultant</option>
+                            <option value="Organization">Organization / Agency</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input id="fullName" type="text" placeholder="Full Name / Brand Name" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition" />
+                    </div>
+                    <div>
+                        <input id="email" type="email" placeholder="Email Address" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition" />
+                    </div>
+                    <div>
+                        <input id="password" type="password" placeholder="Password" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition" />
+                    </div>
+                    <button id="authBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-200 transition-all active:scale-[0.98]">
+                        Enter Marketplace
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MARKETPLACE / DASHBOARD PAGE -->
+<section id="dashboardPage" class="hidden container mx-auto p-4 md:p-8">
+    <!-- DASHBOARD TABS -->
+    <div class="flex space-x-8 border-b border-gray-200 mb-8 overflow-x-auto whitespace-nowrap">
+        <button id="tabMarketBtn" class="pb-4 font-bold text-lg active-tab">Marketplace</button>
+        <button id="tabActivityBtn" class="pb-4 font-bold text-lg text-gray-400 hover:text-gray-600">Activity</button>
+        <button id="tabProfileBtn" class="pb-4 font-bold text-lg text-gray-400 hover:text-gray-600">My Profile</button>
+    </div>
+
+    <!-- MARKETPLACE CONTENT (Default) -->
+    <div id="tabMarket" class="space-y-8">
+        <div id="orgPostSection" class="hidden bg-blue-600 p-8 rounded-3xl text-white shadow-xl shadow-blue-100">
+            <h2 class="text-2xl font-bold mb-4">Post a New Business Listing</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <input id="postTitle" type="text" placeholder="Project Title" class="bg-white/10 border border-white/20 p-3 rounded-xl placeholder-white/60 focus:bg-white/20 outline-none transition" />
+                <input id="postBudget" type="text" placeholder="Budget (e.g. $5k - $10k)" class="bg-white/10 border border-white/20 p-3 rounded-xl placeholder-white/60 focus:bg-white/20 outline-none transition" />
+                <button id="postListingBtn" class="bg-white text-blue-600 font-bold py-3 rounded-xl hover:bg-blue-50 transition">Publish Listing</button>
+            </div>
+        </div>
+
+        <div>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-900">Available Projects</h2>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="text-sm font-medium text-gray-400 uppercase tracking-widest">Live Listings</span>
+                </div>
+            </div>
+            <div id="listingsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Listings injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTIVITY CONTENT -->
+    <div id="tabActivity" class="hidden space-y-8">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Account Activity: <span id="welcomeName" class="text-blue-600"></span></h2>
+            <p class="text-gray-500 mb-8">Manage your Dalaari project activity and performance metrics.</p>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <p class="text-sm font-bold text-blue-600 uppercase">Open Projects</p>
+                    </div>
+                    <p class="text-4xl font-extrabold text-gray-900">24</p>
+                    <p class="text-xs text-blue-400 mt-2">6 new today</p>
+                </div>
+                <div class="p-6 bg-indigo-50 rounded-2xl border border-indigo-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </div>
+                        <p class="text-sm font-bold text-indigo-600 uppercase">Profile Views</p>
+                    </div>
+                    <p class="text-4xl font-extrabold text-gray-900">1.2k</p>
+                    <p class="text-xs text-indigo-400 mt-2">+12% from last week</p>
+                </div>
+                <div class="p-6 bg-purple-50 rounded-2xl border border-purple-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center text-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <p class="text-sm font-bold text-purple-600 uppercase">Verification Status</p>
+                    </div>
+                    <p class="text-2xl font-extrabold text-gray-900">VERIFIED</p>
+                    <p class="text-xs text-purple-400 mt-2">Valid thru 2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Quick Shortcuts</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="switchTab('Profile')" class="flex flex-col items-center p-4 rounded-2xl bg-gray-50 hover:bg-blue-50 transition border border-transparent hover:border-blue-100 group">
+                        <span class="text-sm font-bold text-gray-600 group-hover:text-blue-600">Update ID</span>
+                    </button>
+                    <button onclick="switchTab('Market')" class="flex flex-col items-center p-4 rounded-2xl bg-gray-50 hover:bg-blue-50 transition border border-transparent hover:border-blue-100 group">
+                        <span class="text-sm font-bold text-gray-600 group-hover:text-blue-600">Find Projects</span>
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Support & Help</h3>
+                <p class="text-sm text-gray-500 mb-4">Need help with a listing or your digital identity? Our team is available 24/7.</p>
+                <button class="w-full py-3 rounded-xl bg-gray-900 text-white font-bold hover:bg-blue-600 transition">Contact Support</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE CONTENT -->
+    <div id="tabProfile" class="hidden grid lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Identity Settings</h2>
+                <div class="flex flex-col md:flex-row gap-10">
+                    <div class="flex flex-col items-center shrink-0">
+                        <div class="relative group">
+                            <img id="profileImage" src="" class="w-40 h-40 rounded-full border-4 border-white shadow-xl object-cover bg-gray-100" />
+                            <label for="imageInput" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                                <span class="text-white text-sm font-semibold">Change Photo</span>
+                            </label>
+                        </div>
+                        <input id="imageInput" type="file" accept="image/*" class="hidden" />
+                        <button id="removeImage" class="mt-4 text-red-500 text-sm font-medium hover:underline">Remove Photo</button>
+                    </div>
+                    <div class="flex-1 space-y-5">
+                        <div>
+                            <p class="text-xs uppercase tracking-wider text-gray-400 font-bold mb-1">Verified Consultant ID</p>
+                            <div class="flex items-center gap-2">
+                                <span id="consultantIdDisplay" class="text-xl font-mono font-bold text-blue-600"></span>
+                                <button onclick="copyId()" class="p-1 hover:bg-gray-100 rounded transition"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-semibold text-gray-600 mb-1">Full Name</label><input id="profileName" type="text" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" /></div>
+                            <div><label class="block text-sm font-semibold text-gray-600 mb-1">Account Type</label><input id="profileType" type="text" disabled class="w-full border border-gray-200 p-3 rounded-xl bg-gray-50 text-gray-500" /></div>
+                        </div>
+                        <div><label class="block text-sm font-semibold text-gray-600 mb-1">Email ID</label><input id="profileEmail" type="email" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" /></div>
+                        <div><label class="block text-sm font-semibold text-gray-600 mb-1">Phone Number</label><input id="profilePhone" type="tel" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" /></div>
+                        <button id="saveProfile" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition-all active:scale-95">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="space-y-4">
+            <h3 class="text-lg font-bold text-gray-900 px-2">Digital Member Card</h3>
+            <div id="digitalCard" class="id-card-bg w-full aspect-[1/1.5] max-w-[320px] mx-auto rounded-3xl shadow-2xl p-8 flex flex-col justify-between text-white transform transition hover:scale-[1.02]">
+                <div class="flex justify-between items-start">
+                    <div class="bg-white/20 p-2 rounded-lg backdrop-blur-md">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] font-bold uppercase tracking-[1px] opacity-70">Dalaari Portal</p>
+                        <p id="cardUserType" class="text-[10px] font-bold bg-white text-blue-700 px-2 py-0.5 rounded-full mt-1 inline-block uppercase">MEMBER</p>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <img id="cardImage" class="w-28 h-28 rounded-2xl border-4 border-white/20 object-cover shadow-xl mx-auto mb-4" src="" />
+                    <h3 id="cardName" class="text-xl font-bold truncate"></h3>
+                    <p id="cardEmail" class="text-blue-100 text-[11px] truncate"></p>
+                    <p id="cardPhone" class="text-[10px] font-medium bg-black/10 rounded-full py-0.5 px-3 inline-block mt-2">No Contact</p>
+                </div>
+                <div class="bg-white/10 p-4 rounded-xl border border-white/10">
+                    <p class="text-[9px] uppercase font-bold tracking-widest opacity-60 mb-1">Consultant ID Number</p>
+                    <p id="cardId" class="text-lg font-mono font-bold tracking-widest text-white">DAL-XXXXXXX</p>
+                </div>
+                <div class="flex justify-between items-center opacity-40 text-[9px]"><span>VALID THRU 2026</span><div class="w-8 h-8 bg-white/20 rounded-md"></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// STATE
+let currentUserData = null;
+let defaultListings = [
+    { id: 1, title: "Fintech App Strategy", org: "Nebula Systems", budget: "$12,000", date: "2 days ago", type: "Full Project" },
+    { id: 2, title: "SEO for E-commerce", org: "Global Trade Inc", budget: "$3,500", date: "5 hours ago", type: "Contract" },
+    { id: 3, title: "Cybersecurity Audit", org: "SafeBank Group", budget: "$8,000", date: "1 week ago", type: "Audit" }
+];
+
+// HELPERS
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.style.transform = 'translateY(0)';
+    setTimeout(() => { toast.style.transform = 'translateY(-100px)'; }, 3000);
+}
+
+function generateId() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let id = "DAL-";
+    for (let i = 0; i < 7; i++) id += chars[Math.floor(Math.random() * chars.length)];
+    return id;
+}
+
+function copyId() {
+    const id = document.getElementById('consultantIdDisplay').textContent;
+    navigator.clipboard.writeText(id).then(() => showToast("ID Copied!"));
+}
+
+// STORAGE
+const getUsers = () => JSON.parse(localStorage.getItem("dalaari_users") || "[]");
+const saveUsers = (users) => localStorage.setItem("dalaari_users", JSON.stringify(users));
+const getListings = () => JSON.parse(localStorage.getItem("dalaari_listings") || JSON.stringify(defaultListings));
+const saveListings = (list) => localStorage.setItem("dalaari_listings", JSON.stringify(list));
+
+// NAVIGATION
+function togglePage(pageId) {
+    document.getElementById('authPage').classList.add('hidden');
+    document.getElementById('dashboardPage').classList.add('hidden');
+    document.getElementById(pageId).classList.remove('hidden');
+    
+    if (pageId === 'dashboardPage') {
+        document.getElementById('logoutBtn').classList.remove('hidden');
+    } else {
+        document.getElementById('logoutBtn').classList.add('hidden');
+    }
+}
+
+// TABS
+document.getElementById('tabProfileBtn').onclick = () => switchTab('Profile');
+document.getElementById('tabMarketBtn').onclick = () => switchTab('Market');
+document.getElementById('tabActivityBtn').onclick = () => switchTab('Activity');
+
+function switchTab(tab) {
+    const tabs = ['Profile', 'Market', 'Activity'];
+    tabs.forEach(t => {
+        const el = document.getElementById(`tab${t}`);
+        const btn = document.getElementById(`tab${t}Btn`);
+        if(el) el.classList.add('hidden');
+        if(btn) {
+            btn.classList.remove('active-tab', 'text-gray-900');
+            btn.classList.add('text-gray-400');
+        }
+    });
+    
+    document.getElementById(`tab${tab}`).classList.remove('hidden');
+    document.getElementById(`tab${tab}Btn`).classList.add('active-tab', 'text-gray-900');
+    document.getElementById(`tab${tab}Btn`).classList.remove('text-gray-400');
+    
+    if (tab === 'Market') renderListings();
+    if (tab === 'Activity') document.getElementById('welcomeName').textContent = currentUserData.fullName;
+}
+
+// AUTH
+document.getElementById('authBtn').onclick = () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const fullName = document.getElementById('fullName').value.trim();
+    const type = document.getElementById('userType').value;
+
+    if (!email || !password || !fullName) return showToast("Please complete the form");
+
+    const users = getUsers();
+    let user = users.find(u => u.email === email);
+
+    if (!user) {
+        user = {
+            email, password, fullName, type,
+            phone: "",
+            consultantId: generateId(),
+            image: `https://api.dicebear.com/7.x/initials/svg?seed=${fullName}`
+        };
+        users.push(user);
+        saveUsers(users);
+    } else if (user.password !== password) {
+        return showToast("Incorrect password");
+    }
+
+    currentUserData = user;
+    localStorage.setItem("dalaari_session", email);
+    initDashboard();
+};
+
+function initDashboard() {
+    renderProfile();
+    togglePage('dashboardPage');
+    switchTab('Market'); 
+    
+    if (currentUserData.type === 'Organization') {
+        document.getElementById('orgPostSection').classList.remove('hidden');
+    } else {
+        document.getElementById('orgPostSection').classList.add('hidden');
+    }
+}
+
+// PROFILE RENDERING
+function renderProfile() {
+    if (!currentUserData) return;
+    document.getElementById('profileName').value = currentUserData.fullName;
+    document.getElementById('profileEmail').value = currentUserData.email;
+    document.getElementById('profilePhone').value = currentUserData.phone;
+    document.getElementById('profileType').value = currentUserData.type;
+    document.getElementById('consultantIdDisplay').textContent = currentUserData.consultantId;
+    
+    const imgUrl = currentUserData.image || `https://api.dicebear.com/7.x/initials/svg?seed=${currentUserData.fullName}`;
+    document.getElementById('profileImage').src = document.getElementById('cardImage').src = imgUrl;
+
+    document.getElementById('cardName').textContent = currentUserData.fullName;
+    document.getElementById('cardEmail').textContent = currentUserData.email;
+    document.getElementById('cardPhone').textContent = currentUserData.phone || "No Contact Added";
+    document.getElementById('cardId').textContent = currentUserData.consultantId;
+    document.getElementById('cardUserType').textContent = currentUserData.type;
+}
+
+// MARKETPLACE RENDERING
+function renderListings() {
+    const grid = document.getElementById('listingsGrid');
+    const listings = getListings();
+    grid.innerHTML = listings.map(l => `
+        <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-shadow group">
+            <div class="flex justify-between items-start mb-4">
+                <span class="text-[10px] font-bold bg-blue-50 text-blue-600 px-3 py-1 rounded-full uppercase tracking-wider">${l.type || 'Project'}</span>
+                <span class="text-[10px] text-gray-400 font-bold uppercase">${l.date}</span>
+            </div>
+            <h4 class="text-xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">${l.title}</h4>
+            <p class="text-sm text-gray-500 mb-6 font-semibold">${l.org}</p>
+            <div class="flex justify-between items-center pt-4 border-t border-gray-50">
+                <span class="text-lg font-bold text-blue-600">${l.budget}</span>
+                <button class="text-sm font-bold bg-gray-900 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition">Apply Now</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// POST LISTING
+document.getElementById('postListingBtn').onclick = () => {
+    const title = document.getElementById('postTitle').value.trim();
+    const budget = document.getElementById('postBudget').value.trim();
+    if (!title || !budget) return showToast("Fill listing details");
+
+    const listings = getListings();
+    listings.unshift({
+        id: Date.now(),
+        title,
+        budget,
+        org: currentUserData.fullName,
+        date: "Just now",
+        type: "Direct Listing"
+    });
+    saveListings(listings);
+    document.getElementById('postTitle').value = '';
+    document.getElementById('postBudget').value = '';
+    renderListings();
+    showToast("Listing published!");
+};
+
+// UPDATE PROFILE
+document.getElementById('saveProfile').onclick = () => {
+    const users = getUsers();
+    const index = users.findIndex(u => u.consultantId === currentUserData.consultantId);
+    if (index !== -1) {
+        users[index].fullName = document.getElementById('profileName').value;
+        users[index].email = document.getElementById('profileEmail').value;
+        users[index].phone = document.getElementById('profilePhone').value;
+        currentUserData = users[index];
+        saveUsers(users);
+        renderProfile();
+        showToast("Profile Updated!");
+    }
+};
+
+// IMAGE MANAGEMENT
+document.getElementById('imageInput').onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+        const users = getUsers();
+        const index = users.findIndex(u => u.consultantId === currentUserData.consultantId);
+        users[index].image = reader.result;
+        currentUserData = users[index];
+        saveUsers(users);
+        renderProfile();
+    };
+    reader.readAsDataURL(e.target.files[0]);
+};
+
+document.getElementById('removeImage').onclick = () => {
+    const users = getUsers();
+    const index = users.findIndex(u => u.consultantId === currentUserData.consultantId);
+    users[index].image = "";
+    currentUserData = users[index];
+    saveUsers(users);
+    renderProfile();
+};
+
+document.getElementById('logoutBtn').onclick = () => {
+    localStorage.removeItem("dalaari_session");
+    location.reload();
+};
+
+// INIT
+window.onload = () => {
+    const sessionEmail = localStorage.getItem("dalaari_session");
+    if (sessionEmail) {
+        const user = getUsers().find(u => u.email === sessionEmail);
+        if (user) {
+            currentUserData = user;
+            initDashboard();
+        }
+    }
+};
+</script>
+</body>
+</html>
