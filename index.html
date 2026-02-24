@@ -35,50 +35,49 @@
                 Your Trusted <span class="text-blue-600">Consultant</span> Network.
             </h2>
             <p class="text-xl text-gray-600 mb-8 max-w-xl">
-                Join thousands of verified consultants and organizations on the Dalaari platform. Access exclusive project listings and grow your business today.
+                Join thousands of verified consultants and organizations on the Dalaari platform.
             </p>
-            <div class="flex flex-wrap justify-center lg:justify-start gap-4 text-sm font-bold text-gray-500 uppercase tracking-widest">
-                <span>✓ Active Marketplace</span>
-                <span>•</span>
-                <span>✓ Verified IDs</span>
-                <span>•</span>
-                <span>✓ Global Opportunities</span>
-            </div>
         </div>
 
         <div class="w-full max-w-md">
             <div class="bg-white p-8 rounded-3xl shadow-2xl border border-gray-100">
-                <div class="mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900">Get Started</h3>
-                    <p class="text-gray-500">Enter the marketplace or create your ID</p>
+                <div class="flex border-b border-gray-100 mb-6">
+                    <button id="tabSignin" type="button" class="flex-1 pb-3 font-bold text-blue-600 border-b-2 border-blue-600 transition-all">Sign In</button>
+                    <button id="tabSignup" type="button" class="flex-1 pb-3 font-bold text-gray-400 transition-all">Sign Up</button>
                 </div>
 
                 <div class="space-y-4">
-                    <div>
+                    <div id="signupFields" class="hidden space-y-4">
                         <label class="block text-xs font-bold text-gray-400 uppercase mb-1">I am a...</label>
-                        <select id="userType" class="w-full border border-gray-200 p-3 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <select id="userType" class="w-full border border-gray-200 p-3 rounded-xl bg-gray-50 outline-none">
                             <option value="Consultant">Individual Consultant</option>
                             <option value="Organization">Organization / Agency</option>
                         </select>
-                    </div>
-                    <div>
-                        <input id="fullName" type="text" placeholder="Full Name / Brand Name" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition" />
-                    </div>
-                    <div>
-                        <input id="email" type="email" placeholder="Email Address" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition" />
-                    </div>
-                    <div>
-                        <input id="password" type="password" placeholder="Password" class="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition" />
+                        <input id="fullName" type="text" placeholder="Full Name / Brand Name" class="w-full border border-gray-200 p-3 rounded-xl outline-none" />
                     </div>
                     
-                    <button id="authBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-200 transition-all active:scale-[0.98]">
-                        Enter Marketplace
+                    <input id="email" type="email" placeholder="Email Address" class="w-full border border-gray-200 p-3 rounded-xl outline-none" />
+                    <input id="password" type="password" placeholder="Password" class="w-full border border-gray-200 p-3 rounded-xl outline-none" />
+                    
+                    <button id="authBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition-all active:scale-[0.98]">
+                        Sign In
                     </button>
 
-                    <div class="mt-6 border-t border-gray-100 pt-4 text-center">
-                      <button id="forgotBtn" type="button" class="text-sm font-medium text-blue-500 hover:text-blue-700 underline decoration-dotted underline-offset-4 transition-all">
-                           Forgot Password?
-                     </button>
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-gray-200"></div>
+                        <span class="flex-shrink mx-4 text-gray-400 text-xs font-bold uppercase">Or</span>
+                        <div class="flex-grow border-t border-gray-200"></div>
+                    </div>
+
+                    <button id="googleBtn" type="button" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5" alt="Google">
+                        Continue with Google
+                    </button>
+
+                    <div class="mt-6 text-center">
+                        <button id="forgotBtn" type="button" class="text-sm font-semibold text-blue-500 hover:underline">
+                            Forgot Password?
+                        </button>
                     </div>
                 </div>
             </div>
@@ -86,115 +85,143 @@
     </div>
 </section>
 
-<section id="dashboardPage" class="hidden container mx-auto p-4 md:p-8">
-    </section>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
         getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-        onAuthStateChanged, signOut, sendPasswordResetEmail 
+        onAuthStateChanged, signOut, sendPasswordResetEmail,
+        GoogleAuthProvider, signInWithPopup 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { 
-        getFirestore, doc, setDoc, getDoc, getDocs, collection, query, where, 
-        orderBy, addDoc, serverTimestamp 
+        getFirestore, doc, setDoc, getDoc, serverTimestamp 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // FIREBASE CONFIG
     const firebaseConfig = {
         apiKey: "AIzaSyBsnPYplE-NY22jiqCk6l8ecrTQRLD1XsU",
-        authDomain: "dalaari.firebaseapp.com",
-        projectId: "dalaari",
-        storageBucket: "dalaari.firebasestorage.app",
+        authDomain: "jetasofjs-1138.firebaseapp.com",
+        projectId: "jetasofjs-1138",
+        storageBucket: "jetasofjs-1138.appspot.com",
         messagingSenderId: "200797115936",
-        appId: "1:200797115936:web:c342a00b0f10880cb8ce45",
-        measurementId: "G-4F9P724GBF"
+        appId: "1:200797115936:web:c342a00b0f10880cb8ce45"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
-    let currentUserData = null;
+    let isSignUpMode = false;
 
-    // UI HELPERS
+    // UI Helpers
     function showToast(msg) {
         const toast = document.getElementById('toast');
         document.getElementById('toastMsg').textContent = msg;
         toast.style.transform = 'translateY(0)';
-        setTimeout(() => { toast.style.transform = 'translateY(-100px)'; }, 3000);
+        setTimeout(() => { toast.style.transform = 'translateY(-100px)'; }, 4000);
     }
 
-    function togglePage(pageId) {
-        document.getElementById('authPage').classList.add('hidden');
-        document.getElementById('dashboardPage').classList.add('hidden');
-        document.getElementById(pageId).classList.remove('hidden');
-        document.getElementById('logoutBtn').classList.toggle('hidden', pageId !== 'dashboardPage');
-    }
+    // Tab Logic: Switches between Sign In and Sign Up
+    const tabSignin = document.getElementById('tabSignin');
+    const tabSignup = document.getElementById('tabSignup');
+    const signupFields = document.getElementById('signupFields');
+    const authBtn = document.getElementById('authBtn');
 
-    // --- FORGOT PASSWORD LOGIC ---
+    tabSignin.onclick = () => {
+        isSignUpMode = false;
+        signupFields.classList.add('hidden');
+        authBtn.textContent = "Sign In";
+        tabSignin.className = "flex-1 pb-3 font-bold text-blue-600 border-b-2 border-blue-600";
+        tabSignup.className = "flex-1 pb-3 font-bold text-gray-400";
+    };
+
+    tabSignup.onclick = () => {
+        isSignUpMode = true;
+        signupFields.classList.remove('hidden');
+        authBtn.textContent = "Create Account";
+        tabSignup.className = "flex-1 pb-3 font-bold text-blue-600 border-b-2 border-blue-600";
+        tabSignin.className = "flex-1 pb-3 font-bold text-gray-400";
+    };
+
+    // Main Auth Button (Email/Password)
+    authBtn.onclick = async () => {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        if (!email || !password) return showToast("Enter email and password");
+
+        try {
+            if (isSignUpMode) {
+                // SIGN UP PATH: Fails if user already exists
+                const fullName = document.getElementById('fullName').value.trim();
+                const type = document.getElementById('userType').value;
+                if (!fullName) return showToast("Please enter Full Name for Sign Up");
+                
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await setDoc(doc(db, "users", userCredential.user.uid), {
+                    uid: userCredential.user.uid,
+                    fullName, email, type, createdAt: serverTimestamp()
+                });
+                showToast("Account Created Successfully!");
+            } else {
+                // SIGN IN PATH: Fails if user does not exist
+                await signInWithEmailAndPassword(auth, email, password);
+            }
+        } catch (err) {
+            if (err.code === 'auth/user-not-found') {
+                showToast("No account found with this email. Please click 'Sign Up' first!");
+            } else if (err.code === 'auth/wrong-password') {
+                showToast("Incorrect password. Try again or reset it.");
+            } else {
+                showToast(err.message);
+            }
+        }
+    };
+
+    // Google Sign-In Logic
+    document.getElementById('googleBtn').onclick = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            // Optional: Save Google user to Firestore if new
+            const user = result.user;
+            await setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                fullName: user.displayName,
+                email: user.email,
+                type: "Consultant", // Default for Google users
+                createdAt: serverTimestamp()
+            }, { merge: true });
+        } catch (err) {
+            showToast("Google Error: " + err.message);
+        }
+    };
+
+    // Forgot Password
     document.getElementById('forgotBtn').onclick = async () => {
         const email = document.getElementById('email').value.trim();
-        if (!email) {
-            showToast("Please enter your email above first!");
-            return;
-        }
+        if (!email) return showToast("Enter your email above first!");
         try {
             await sendPasswordResetEmail(auth, email);
             showToast("Reset link sent to " + email);
         } catch (err) {
-            showToast("Error: " + err.message);
+            showToast(err.message);
         }
     };
 
-    // --- AUTH LOGIC ---
-    document.getElementById('authBtn').onclick = async () => {
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value.trim();
-        const fullName = document.getElementById('fullName').value.trim();
-        const type = document.getElementById('userType').value;
-
-        if (!email || !password) return showToast("Email and Password required");
-
-        try {
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-            } catch (err) {
-                if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-                    if (!fullName) return showToast("Please enter Full Name for new account");
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const userData = {
-                        uid: userCredential.user.uid,
-                        fullName, email, type, phone: "",
-                        consultantId: "DAL-" + Math.random().toString(36).substr(2, 7).toUpperCase(),
-                        image: `https://api.dicebear.com/7.x/initials/svg?seed=${fullName}`,
-                        rating: type === 'Consultant' ? 5.0 : null,
-                        createdAt: serverTimestamp()
-                    };
-                    await setDoc(doc(db, "users", userCredential.user.uid), userData);
-                } else { throw err; }
-            }
-        } catch (error) {
-            showToast("Auth Error: " + error.message);
-        }
-    };
-
-    // Keep all your original session handling, marketplace, and profile functions below...
-    onAuthStateChanged(auth, async (user) => {
+    // Session Handling
+    onAuthStateChanged(auth, (user) => {
         if (user) {
-            const docSnap = await getDoc(doc(db, "users", user.uid));
-            if (docSnap.exists()) {
-                currentUserData = docSnap.data();
-                renderProfile();
-                initDashboard();
-            }
+            document.getElementById('authPage').classList.add('hidden');
+            document.getElementById('dashboardPage').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
         } else {
-            togglePage('authPage');
+            document.getElementById('authPage').classList.remove('hidden');
+            document.getElementById('dashboardPage').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
         }
     });
 
-    // (Include the rest of your switchTab, renderListings, and renderProfile functions here)
-    // ...
+    document.getElementById('logoutBtn').onclick = () => signOut(auth);
 </script>
 </body>
 </html>
+
