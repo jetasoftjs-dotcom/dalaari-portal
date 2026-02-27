@@ -8,89 +8,297 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        .id-card-bg { background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%); position: relative; overflow: hidden; }
+        .id-card-bg { 
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); 
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.2), 0 10px 10px -5px rgba(37, 99, 235, 0.1);
+        }
         .hidden { display: none !important; }
-        .active-tab { border-bottom: 3px solid #2563eb; color: #2563eb; }
+        .active-tab { border-bottom: 3px solid #2563eb; color: #2563eb !important; font-weight: 700; }
+        .nav-link { color: #9ca3af; transition: all 0.2s; cursor: pointer; padding-bottom: 8px; }
+        .nav-link:hover { color: #4b5563; }
+        .project-card { transition: all 0.3s ease; }
+        .project-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); }
+        .auth-card { border-radius: 2rem; }
+        .stat-card { border-radius: 1.5rem; }
+        .logo-btn { transition: opacity 0.2s; }
+        .logo-btn:hover { opacity: 0.8; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-<div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] transition-transform duration-300 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3">
-    <span id="toastMsg"></span>
+<!-- Notification Toast -->
+<div id="toast" class="fixed top-5 right-5 z-[100] transform translate-y-[-120%] transition-transform duration-300 bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3">
+    <div class="bg-blue-500 rounded-full p-1">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="5 13l4 4L19 7"></path></svg>
+    </div>
+    <span id="toastMsg" class="font-medium"></span>
 </div>
 
+<!-- Navigation Header -->
 <header class="bg-white sticky top-0 z-40 border-b border-gray-100 p-4">
     <div class="container mx-auto flex justify-between items-center">
-        <h1 class="text-2xl font-extrabold text-blue-600 tracking-tight">Dalaari<span class="text-gray-900">.com</span></h1>
-        <nav class="flex items-center space-x-6">
-            <button id="logoutBtn" class="hidden text-red-500 hover:text-red-700 font-semibold transition px-4 py-2 rounded-lg hover:bg-red-50">Logout</button>
-        </nav>
+        <div class="flex items-center gap-12">
+            <!-- Clickable Logo -->
+            <button onclick="goHome()" class="logo-btn text-2xl font-extrabold text-blue-600 tracking-tight outline-none">
+                Dalaari<span class="text-gray-900">.com</span>
+            </button>
+            
+            <!-- Logged In Navigation -->
+            <nav id="mainNav" class="hidden flex items-center space-x-8 pt-1">
+                <span onclick="switchTab('marketplace')" id="tab-marketplace" class="nav-link active-tab">Marketplace</span>
+                <span onclick="switchTab('activity')" id="tab-activity" class="nav-link">Activity</span>
+                <span onclick="switchTab('profile')" id="tab-profile" class="nav-link">My Profile</span>
+            </nav>
+        </div>
+        <div class="flex items-center gap-4">
+            <button id="logoutBtn" class="hidden text-gray-500 hover:text-red-600 font-bold transition-all px-4 py-2 rounded-xl hover:bg-red-50">Logout</button>
+        </div>
     </div>
 </header>
 
-<section id="authPage" class="py-16 px-4">
-    <div class="container mx-auto max-w-6xl flex flex-col lg:flex-row items-center gap-12">
+<!-- 1. AUTHENTICATION PAGE -->
+<section id="authPage" class="py-12 lg:py-24 px-4">
+    <div class="container mx-auto max-w-6xl flex flex-col lg:flex-row items-center gap-16">
         <div class="flex-1 text-center lg:text-left">
-            <h2 class="text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
+            <h2 class="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-tight mb-8">
                 Your Trusted <span class="text-blue-600">Consultant</span> Network.
             </h2>
-            <p class="text-xl text-gray-600 mb-8 max-w-xl">
-                Join thousands of verified consultants and organizations on the Dalaari platform.
+            <p class="text-xl text-gray-500 mb-10 max-w-xl leading-relaxed">
+                Join thousands of verified consultants and organizations scaling their businesses on the Dalaari marketplace.
             </p>
+            <div class="flex flex-wrap justify-center lg:justify-start gap-8 opacity-40 grayscale">
+                <span class="font-black text-2xl tracking-tighter">TRUSTED</span>
+                <span class="font-black text-2xl tracking-tighter">PARTNERS</span>
+                <span class="font-black text-2xl tracking-tighter">VERIFIED</span>
+            </div>
         </div>
 
         <div class="w-full max-w-md">
-            <div class="bg-white p-8 rounded-3xl shadow-2xl border border-gray-100">
-                <div class="flex border-b border-gray-100 mb-6">
-                    <button id="tabSignin" type="button" class="flex-1 pb-3 font-bold text-blue-600 border-b-2 border-blue-600 transition-all">Sign In</button>
-                    <button id="tabSignup" type="button" class="flex-1 pb-3 font-bold text-gray-400 transition-all">Sign Up</button>
+            <!-- Added id to wrapper to handle Enter key listener -->
+            <div id="authContainer" class="bg-white p-10 auth-card shadow-2xl border border-gray-100">
+                <div class="flex border-b border-gray-100 mb-8">
+                    <button id="tabSignin" type="button" class="flex-1 pb-4 font-bold text-blue-600 border-b-2 border-blue-600 transition-all text-lg">Sign In</button>
+                    <button id="tabSignup" type="button" class="flex-1 pb-4 font-bold text-gray-400 transition-all text-lg">Sign Up</button>
                 </div>
 
-                <div class="space-y-4">
-                    <div id="signupFields" class="hidden space-y-4">
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">I am a...</label>
-                        <select id="userType" class="w-full border border-gray-200 p-3 rounded-xl bg-gray-50 outline-none">
-                            <option value="Consultant">Individual Consultant</option>
-                            <option value="Organization">Organization / Agency</option>
-                        </select>
-                        <input id="fullName" type="text" placeholder="Full Name / Brand Name" class="w-full border border-gray-200 p-3 rounded-xl outline-none" />
+                <div class="space-y-5">
+                    <div id="signupFields" class="hidden space-y-5">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Account Type</label>
+                            <select id="userType" class="w-full border border-gray-200 p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                                <option value="Consultant">Individual Consultant</option>
+                                <option value="Organization">Organization / Agency</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Full Name / Brand</label>
+                            <input id="fullName" type="text" placeholder="e.g. Susheel Kumar" class="w-full border border-gray-200 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+                        </div>
                     </div>
                     
-                    <input id="email" type="email" placeholder="Email Address" class="w-full border border-gray-200 p-3 rounded-xl outline-none" />
-                    <input id="password" type="password" placeholder="Password" class="w-full border border-gray-200 p-3 rounded-xl outline-none" />
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Email Address</label>
+                        <input id="email" type="email" placeholder="name@email.com" class="w-full border border-gray-200 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Password</label>
+                        <input id="password" type="password" placeholder="Min. 6 chars, alphanumeric" class="w-full border border-gray-200 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+                    </div>
                     
-                    <button id="authBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition-all active:scale-[0.98]">
+                    <button id="authBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-2xl font-bold text-xl shadow-lg shadow-blue-600/20 transition-all active:scale-[0.98]">
                         Sign In
                     </button>
 
-                    <div class="relative flex py-2 items-center">
-                        <div class="flex-grow border-t border-gray-200"></div>
-                        <span class="flex-shrink mx-4 text-gray-400 text-xs font-bold uppercase">Or</span>
-                        <div class="flex-grow border-t border-gray-200"></div>
+                    <div class="relative flex py-4 items-center">
+                        <div class="flex-grow border-t border-gray-100"></div>
+                        <span class="flex-shrink mx-4 text-gray-300 text-[10px] font-bold uppercase tracking-widest">Secured Entry</span>
+                        <div class="flex-grow border-t border-gray-100"></div>
                     </div>
 
-                    <button id="googleBtn" type="button" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all">
+                    <button id="googleBtn" type="button" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 py-4 rounded-2xl font-bold text-gray-700 hover:bg-gray-50 transition-all">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5" alt="Google">
                         Continue with Google
                     </button>
-
-                    <div class="mt-6 text-center">
-                        <button id="forgotBtn" type="button" class="text-sm font-semibold text-blue-500 hover:underline">
-                            Forgot Password?
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<section id="dashboardPage" class="hidden py-16 px-4 text-center">
-    <div class="container mx-auto">
-        <h2 class="text-3xl font-bold mb-4">Welcome to your Dashboard!</h2>
-        <p class="text-gray-600">You have successfully signed in.</p>
-        <div class="mt-8 bg-white p-6 rounded-xl shadow-md inline-block">
-            <p>Your Marketplace projects will appear here shortly.</p>
+<!-- 2. MARKETPLACE PAGE -->
+<section id="marketplacePage" class="hidden py-12 px-4">
+    <div class="container mx-auto max-w-7xl">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+            <div>
+                <h2 class="text-4xl font-black text-gray-900 tracking-tight">Project Marketplace</h2>
+                <p class="text-gray-500 mt-1">Found 128 active opportunities for you.</p>
+            </div>
+            <div class="flex items-center gap-3 bg-green-50 text-green-600 font-bold text-xs px-4 py-2 rounded-full border border-green-100">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                MARKET LIVE
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm project-card flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">Strategic Audit</span>
+                        <span class="text-gray-400 text-[10px] font-bold uppercase">2h Ago</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2 leading-tight">Supply Chain Optimization</h3>
+                    <p class="text-gray-400 font-semibold mb-10">Titan Logistics Corp</p>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-50">
+                    <span class="text-3xl font-black text-blue-600">$18,500</span>
+                    <button class="bg-gray-900 text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-black transition-all shadow-lg shadow-black/5 active:scale-95">Apply</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm project-card flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">Development</span>
+                        <span class="text-gray-400 text-[10px] font-bold uppercase">Yesterday</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2 leading-tight">E-Commerce Architecture</h3>
+                    <p class="text-gray-400 font-semibold mb-10">Aether Global</p>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-50">
+                    <span class="text-3xl font-black text-blue-600">$12,000</span>
+                    <button class="bg-gray-900 text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-black transition-all shadow-lg shadow-black/5 active:scale-95">Apply</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm project-card flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">Compliance</span>
+                        <span class="text-gray-400 text-[10px] font-bold uppercase">5h Ago</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2 leading-tight">GDPR Data Privacy Audit</h3>
+                    <p class="text-gray-400 font-semibold mb-10">Lumina Financial</p>
+                </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-50">
+                    <span class="text-3xl font-black text-blue-600">$9,200</span>
+                    <button class="bg-gray-900 text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-black transition-all shadow-lg shadow-black/5 active:scale-95">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. ACTIVITY PAGE -->
+<section id="activityPage" class="hidden py-12 px-4">
+    <div class="container mx-auto max-w-7xl">
+        <div class="bg-white p-12 rounded-[3rem] border border-gray-100 mb-10 shadow-sm">
+            <h2 class="text-4xl font-black text-gray-900 mb-2 tracking-tight">Account Activity: <span id="displayUserName" class="text-blue-600">User</span></h2>
+            <p class="text-gray-400 text-lg mb-12">Monitor your engagement, project applications, and verification status.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-blue-50/40 p-10 stat-card border border-blue-100 group hover:bg-blue-50 transition-all">
+                    <div class="flex items-center gap-4 text-blue-600 font-black text-xs uppercase tracking-widest mb-6">
+                        <div class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-lg shadow-lg shadow-blue-600/20">💼</div> 
+                        Marketplace Projects
+                    </div>
+                    <div class="text-6xl font-black text-gray-900 mb-1 tracking-tighter">42</div>
+                    <div class="text-blue-500/60 text-sm font-bold">12 Active Tenders</div>
+                </div>
+
+                <div class="bg-blue-50/40 p-10 stat-card border border-blue-100 group hover:bg-blue-50 transition-all">
+                    <div class="flex items-center gap-4 text-blue-600 font-black text-xs uppercase tracking-widest mb-6">
+                        <div class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-lg shadow-lg shadow-blue-600/20">👁️</div> 
+                        Profile Visibility
+                    </div>
+                    <div class="text-6xl font-black text-gray-900 mb-1 tracking-tighter">1.8k</div>
+                    <div class="text-blue-500/60 text-sm font-bold">Views this month</div>
+                </div>
+
+                <div class="bg-purple-50/40 p-10 stat-card border border-purple-100 group hover:bg-purple-50 transition-all">
+                    <div class="flex items-center gap-4 text-purple-600 font-black text-xs uppercase tracking-widest mb-6">
+                        <div class="w-10 h-10 bg-purple-600 rounded-2xl flex items-center justify-center text-white text-lg shadow-lg shadow-purple-600/20">🛡️</div> 
+                        Verification
+                    </div>
+                    <div class="text-4xl font-black text-gray-900 mb-2 tracking-tighter">VERIFIED</div>
+                    <div class="text-purple-500/60 text-sm font-bold">Dalaari Gold Member</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. PROFILE PAGE -->
+<section id="profilePage" class="hidden py-12 px-4">
+    <div class="container mx-auto max-w-7xl flex flex-col lg:flex-row gap-12">
+        <div class="flex-grow bg-white p-12 rounded-[3.5rem] border border-gray-100 shadow-sm">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-4xl font-black text-gray-900 tracking-tight">Identity Settings</h2>
+                    <p class="text-gray-400 mt-2">Personalize your verified consultant profile.</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Profile Score</span>
+                    <div class="text-2xl font-black text-green-500">98%</div>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-12">
+                <div class="text-center group">
+                    <div id="pfpPlaceholder" class="w-40 h-40 bg-red-500 rounded-full flex items-center justify-center text-white text-6xl font-black mx-auto mb-6 border-8 border-white shadow-2xl transition-transform group-hover:scale-105">SK</div>
+                </div>
+                
+                <div class="flex-grow space-y-8">
+                    <div>
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Verified Consultant ID</span>
+                        <div class="bg-blue-50 p-4 rounded-2xl flex justify-between items-center border border-blue-100">
+                            <span id="displayId" class="text-blue-600 font-black font-mono text-lg">DAL-6A8IE2V</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Professional Name</label>
+                            <input id="profileName" type="text" class="w-full bg-gray-50 border border-gray-100 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/10 font-bold" value="Susheel Kumar">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Account Category</label>
+                            <input type="text" class="w-full bg-gray-100 border border-gray-100 p-5 rounded-2xl outline-none text-gray-400 font-bold cursor-not-allowed" value="Verified Consultant" disabled>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Primary Email</label>
+                        <input id="profileEmail" type="email" class="w-full bg-gray-50 border border-gray-100 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/10 font-bold" value="susheel@example.com">
+                    </div>
+
+                    <button id="saveChanges" class="bg-blue-600 text-white px-12 py-5 rounded-[2rem] font-black text-lg shadow-xl shadow-blue-600/20 hover:bg-blue-700 transition-all transform active:scale-95">Update Identity</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ID Card Sidebar -->
+        <div class="w-full lg:w-96 flex flex-col items-center">
+            <div class="id-card-bg w-full p-10 text-white relative shadow-2xl overflow-hidden aspect-[3/4.5] flex flex-col justify-between">
+                <div class="relative z-10 flex justify-between items-start">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z"/></svg>
+                    </div>
+                </div>
+                
+                <div class="relative z-10 text-center flex flex-col items-center">
+                    <div id="cardAvatar" class="w-24 h-24 bg-red-500 rounded-[2rem] flex items-center justify-center text-white text-4xl font-black border-4 border-white/20 shadow-2xl mb-6">SK</div>
+                    <h4 id="cardName" class="text-2xl font-black mb-1">Susheel Kumar</h4>
+                    <p id="cardEmail" class="text-[11px] font-medium opacity-60">susheel@example.com</p>
+                </div>
+
+                <div class="relative z-10">
+                    <div class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
+                        <div class="text-[9px] font-black opacity-50 uppercase tracking-widest mb-2">Member Reference</div>
+                        <div id="cardId" class="text-xl font-mono font-black tracking-wider">DAL-6A8IE2V</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -99,8 +307,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
         getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-        onAuthStateChanged, signOut, sendPasswordResetEmail,
-        GoogleAuthProvider, signInWithPopup 
+        onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { 
         getFirestore, doc, setDoc, getDoc, serverTimestamp 
@@ -122,82 +329,113 @@
 
     let isSignUpMode = false;
 
-    // UI Helpers
-    function showToast(msg) {
+    // --- NAVIGATION LOGIC ---
+    window.switchTab = (tabName) => {
+        const pages = ['marketplacePage', 'activityPage', 'profilePage'];
+        const tabs = ['tab-marketplace', 'tab-activity', 'tab-profile'];
+        
+        pages.forEach(p => document.getElementById(p).classList.add('hidden'));
+        tabs.forEach(t => document.getElementById(t).classList.remove('active-tab'));
+
+        document.getElementById(`${tabName}Page`).classList.remove('hidden');
+        document.getElementById(`tab-${tabName}`).classList.add('active-tab');
+        window.scrollTo(0,0);
+    };
+
+    // Go Home Logic (Clicking Logo)
+    window.goHome = () => {
+        if (auth.currentUser) {
+            switchTab('marketplace');
+        } else {
+            // If not logged in, ensure we are on auth page
+            ['marketplacePage', 'activityPage', 'profilePage'].forEach(p => document.getElementById(p).classList.add('hidden'));
+            document.getElementById('authPage').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+    };
+
+    // --- UI HELPERS ---
+    window.showToast = (msg) => {
         const toast = document.getElementById('toast');
         document.getElementById('toastMsg').textContent = msg;
         toast.style.transform = 'translateY(0)';
-        setTimeout(() => { toast.style.transform = 'translateY(-100px)'; }, 4000);
-    }
+        setTimeout(() => { toast.style.transform = 'translateY(-150%)'; }, 4000);
+    };
 
-    // Tab Logic: Switches between Sign In and Sign Up
+    // --- AUTH LOGIC ---
+    const authBtn = document.getElementById('authBtn');
     const tabSignin = document.getElementById('tabSignin');
     const tabSignup = document.getElementById('tabSignup');
-    const signupFields = document.getElementById('signupFields');
-    const authBtn = document.getElementById('authBtn');
 
-    tabSignin.onclick = () => {
-        isSignUpMode = false;
-        signupFields.classList.add('hidden');
-        authBtn.textContent = "Sign In";
-        tabSignin.className = "flex-1 pb-3 font-bold text-blue-600 border-b-2 border-blue-600";
-        tabSignup.className = "flex-1 pb-3 font-bold text-gray-400";
-    };
-
-    tabSignup.onclick = () => {
-        isSignUpMode = true;
-        signupFields.classList.remove('hidden');
-        authBtn.textContent = "Create Account";
-        tabSignup.className = "flex-1 pb-3 font-bold text-blue-600 border-b-2 border-blue-600";
-        tabSignin.className = "flex-1 pb-3 font-bold text-gray-400";
-    };
-
-    // Main Auth Button (Email/Password)
-    authBtn.onclick = async () => {
+    const handleAuth = async () => {
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value.trim();
 
-        if (!email || !password) return showToast("Enter email and password");
+        if (!email || !password) return showToast("Enter credentials");
+
+        // Alphanumeric + Min 6 check
+        const isAlphanumeric = /^(?=.*[a-zA-Z])(?=.*[0-9]).+$/.test(password);
+        if (password.length < 6 || !isAlphanumeric) {
+            return showToast("Password must be 6+ chars and alphanumeric.");
+        }
 
         try {
             if (isSignUpMode) {
-                // SIGN UP PATH: Fails if user already exists
                 const fullName = document.getElementById('fullName').value.trim();
                 const type = document.getElementById('userType').value;
-                if (!fullName) return showToast("Please enter Full Name for Sign Up");
+                if (!fullName) return showToast("Name required for Sign Up");
                 
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 await setDoc(doc(db, "users", userCredential.user.uid), {
                     uid: userCredential.user.uid,
                     fullName, email, type, createdAt: serverTimestamp()
                 });
-                showToast("Account Created Successfully!");
+                showToast("Account created!");
             } else {
-                // SIGN IN PATH: Fails if user does not exist
                 await signInWithEmailAndPassword(auth, email, password);
             }
         } catch (err) {
-            if (err.code === 'auth/user-not-found') {
-                showToast("No account found with this email. Please click 'Sign Up' first!");
-            } else if (err.code === 'auth/wrong-password') {
-                showToast("Incorrect password. Try again or reset it.");
-            } else {
-                showToast(err.message);
-            }
+            showToast(err.message);
         }
     };
 
-    // Google Sign-In Logic
+    // Click trigger
+    authBtn.onclick = handleAuth;
+
+    // Keyboard trigger (Enter key)
+    document.getElementById('authContainer').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleAuth();
+        }
+    });
+
+    // Signin/Signup Toggle
+    tabSignin.onclick = () => {
+        isSignUpMode = false;
+        document.getElementById('signupFields').classList.add('hidden');
+        authBtn.textContent = "Sign In";
+        tabSignin.className = "flex-1 pb-4 font-bold text-blue-600 border-b-2 border-blue-600 transition-all text-lg";
+        tabSignup.className = "flex-1 pb-4 font-bold text-gray-400 transition-all text-lg";
+    };
+
+    tabSignup.onclick = () => {
+        isSignUpMode = true;
+        document.getElementById('signupFields').classList.remove('hidden');
+        authBtn.textContent = "Create Account";
+        tabSignup.className = "flex-1 pb-4 font-bold text-blue-600 border-b-2 border-blue-600 transition-all text-lg";
+        tabSignin.className = "flex-1 pb-4 font-bold text-gray-400 transition-all text-lg";
+    };
+
+    // Google Auth
     document.getElementById('googleBtn').onclick = async () => {
         try {
             const result = await signInWithPopup(auth, provider);
-            // Optional: Save Google user to Firestore if new
             const user = result.user;
             await setDoc(doc(db, "users", user.uid), {
                 uid: user.uid,
                 fullName: user.displayName,
                 email: user.email,
-                type: "Consultant", // Default for Google users
+                type: "Consultant",
                 createdAt: serverTimestamp()
             }, { merge: true });
         } catch (err) {
@@ -205,33 +443,52 @@
         }
     };
 
-    // Forgot Password
-    document.getElementById('forgotBtn').onclick = async () => {
-        const email = document.getElementById('email').value.trim();
-        if (!email) return showToast("Enter your email above first!");
-        try {
-            await sendPasswordResetEmail(auth, email);
-            showToast("Reset link sent to " + email);
-        } catch (err) {
-            showToast(err.message);
-        }
-    };
-
-    // Session Handling
-    onAuthStateChanged(auth, (user) => {
+    // --- SESSION STATE ---
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
             document.getElementById('authPage').classList.add('hidden');
-            document.getElementById('dashboardPage').classList.remove('hidden');
+            document.getElementById('mainNav').classList.remove('hidden');
             document.getElementById('logoutBtn').classList.remove('hidden');
+            switchTab('marketplace');
+
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if(userDoc.exists()){
+                const data = userDoc.data();
+                const initials = data.fullName ? data.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2) : "SK";
+                document.getElementById('displayUserName').textContent = data.fullName;
+                document.getElementById('profileName').value = data.fullName;
+                document.getElementById('cardName').textContent = data.fullName;
+                document.getElementById('profileEmail').value = data.email;
+                document.getElementById('cardEmail').textContent = data.email;
+                document.getElementById('pfpPlaceholder').textContent = initials;
+                document.getElementById('cardAvatar').textContent = initials;
+            }
         } else {
             document.getElementById('authPage').classList.remove('hidden');
-            document.getElementById('dashboardPage').classList.add('hidden');
+            document.getElementById('mainNav').classList.add('hidden');
             document.getElementById('logoutBtn').classList.add('hidden');
+            ['marketplacePage', 'activityPage', 'profilePage'].forEach(p => document.getElementById(p).classList.add('hidden'));
         }
     });
 
     document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
+    document.getElementById('saveChanges').onclick = async () => {
+        const user = auth.currentUser;
+        if(!user) return;
+        const newName = document.getElementById('profileName').value;
+        const newEmail = document.getElementById('profileEmail').value;
+        try {
+            await setDoc(doc(db, "users", user.uid), { fullName: newName, email: newEmail }, { merge: true });
+            document.getElementById('cardName').textContent = newName;
+            document.getElementById('cardEmail').textContent = newEmail;
+            document.getElementById('displayUserName').textContent = newName;
+            const initials = newName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+            document.getElementById('pfpPlaceholder').textContent = initials;
+            document.getElementById('cardAvatar').textContent = initials;
+            showToast("Profile identity updated!");
+        } catch (e) { showToast("Update failed: " + e.message); }
+    }
 </script>
 </body>
 </html>
-
